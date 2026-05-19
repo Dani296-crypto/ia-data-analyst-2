@@ -1,4 +1,9 @@
 import streamlit as st
+
+if "auth" not in st.session_state:
+    st.stop()
+    
+import streamlit as st
 import pandas as pd
 from dotenv import load_dotenv
 from openai import OpenAI
