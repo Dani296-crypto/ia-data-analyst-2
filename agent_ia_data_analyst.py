@@ -11,7 +11,10 @@ password = st.text_input("🔒 Entrez le mot de passe", type="password")
 
 if password:
 
-    if password != st.secrets["APP_PASSWORD"]:
+    if password == st.secrets["APP_PASSWORD"]:
+        st.success("✅ Accès autorisé")
+
+    else:
         st.error("❌ Mot de passe incorrect")
         st.stop()
 
