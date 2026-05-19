@@ -7,11 +7,17 @@ import os
 # ======================
 # 🔒 MOT DE PASSE
 # ======================
-password = st.text_input("🔒 Mot de passe", type="password")
+password = st.text_input("🔒 Entrez le mot de passe", type="password")
 
-if password != st.secrets["APP_PASSWORD"]:
+if password:
+
+    if password != st.secrets["APP_PASSWORD"]:
+        st.error("❌ Mot de passe incorrect")
+        st.stop()
+
+else:
+    st.warning("🔒 Veuillez entrer le mot de passe")
     st.stop()
-    
 # ======================
 # CONFIG
 # ======================
