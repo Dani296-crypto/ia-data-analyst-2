@@ -1,128 +1,16 @@
 import streamlit as st
-import pandas as pd
-from dotenv import load_dotenv
-from openai import OpenAI
-import os
 
-# ======================
-# 🔒 MOT DE PASSE
-# ======================
-password = st.text_input("🔒 Entrez le mot de passe", type="password")
+st.set_page_config(page_title="Login IA", layout="centered")
 
-if password:
+st.title("🔐 Connexion")
+
+password = st.text_input("Mot de passe", type="password")
+
+if st.button("Se connecter"):
 
     if password == st.secrets["APP_PASSWORD"]:
-        st.success("✅ Accès autorisé")
+        st.success("Accès autorisé")
+        st.switch_page("pages/dashboard.py")
 
     else:
-        st.error("❌ Mot de passe incorrect")
-        st.stop()
-
-else:
-    st.warning("🔒 Veuillez entrer le mot de passe")
-    st.stop()
-# ======================
-# CONFIG
-# ======================
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-st.set_page_config(page_title="IA Data Analyst PRO", layout="wide")
-st.title("📊 IA Data Analyst PRO")
-
-# ======================
-# INIT HISTORIQUE
-# ======================
-if "history" not in st.session_state:
-    st.session_state.history = []
-
-# ======================
-# UPLOAD
-# ======================
-file = st.file_uploader("📂 Upload Excel", type=["xlsx"])
-
-if file:
-    df = pd.read_excel(file)
-
-    st.subheader("🔍 Aperçu des données")
-    st.dataframe(df)
-
-    # ======================
-    # IA FUNCTION
-    # ======================
-    def generate_result(question):
-
-        prompt = f"""
-Tu es un data analyst expert universel.
-
-MISSION :
-Analyser n'importe quel fichier Excel et répondre aux questions utilisateur.
-
-RÈGLES ABSOLUES :
-- Tu ne supposes aucune colonne
-- Tu utilises uniquement les données fournies
-- Tu fais les calculs directement à partir du tableau
-- Tu réponds même si le dataset est différent à chaque fois
-- Tu ne demandes jamais de confirmation
-- Si une information est absente, tu dis "non disponible"
-- Tu adaptes ton analyse selon les données
-
-DONNÉES COMPLETES DU FICHIER :
-{df.to_string(index=False)}
-
-COLONNES DETECTÉES :
-{df.columns.tolist()}
-
-QUESTION UTILISATEUR :
-{question}
-
-RÉPONSE :
-"""
-
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Tu es un data analyst universel précis, logique et orienté business."
-                },
-                {
-                    "role": "user",
-                    "content": prompt
-                }
-            ]
-        )
-
-        return response.choices[0].message.content
-
-    # ======================
-    # UI
-    # ======================
-    st.subheader("🧠 Pose ta question")
-
-    question = st.text_input("Ex: Analyse ce fichier et donne-moi les insights")
-
-    if question:
-        with st.spinner("Analyse en cours... 🤖"):
-            result = generate_result(question)
-
-        # ======================
-        # AJOUT HISTORIQUE
-        # ======================
-        st.session_state.history.append({
-            "question": question,
-            "answer": result
-        })
-
-        st.subheader("📊 Résultat Data Analyst")
-        st.write(result)
-
-    # ======================
-    # AFFICHAGE HISTORIQUE
-    # ======================
-    if st.session_state.history:
-        st.subheader("💬 Historique Conversation")
-
-        for chat in reversed(st.session_state.history):
-            st.markdown("---")
-            st.write("🧑 Question :", chat["question"])
-            st.write("🤖 Réponse :", chat["answer"])
+        st.error("Mot de passe incorrect")
